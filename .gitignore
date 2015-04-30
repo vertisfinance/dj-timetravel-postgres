@@ -42,4 +42,4 @@ output/*/index.html
 docs/_build
 
 tests/**/migrations/*
-!migrations/__init__.py
+!tests/**/migrations/__init__.py
