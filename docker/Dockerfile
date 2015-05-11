@@ -50,4 +50,4 @@ COPY start.py .
 RUN chmod 700 start.py
 
 EXPOSE 5432
-CMD ["gosu", "postgres", "postgres"]
+CMD ["python", "start.py"]

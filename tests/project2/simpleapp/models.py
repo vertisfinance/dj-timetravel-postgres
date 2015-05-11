@@ -1,3 +1,5 @@
 from django.db import models
 
-# Create your models here.
+
+class Simple2(models.Model):
+    name = models.CharField('The name', max_length=100)
