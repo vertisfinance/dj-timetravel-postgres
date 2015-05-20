@@ -1,4 +1,5 @@
 coverage:
+	coverage combine
 	coverage erase
 	python commands.py remove_container djtt
 	python commands.py run_container djtt

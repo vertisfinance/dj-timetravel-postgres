@@ -87,6 +87,8 @@ def run_tests(path, no_makemigrations, no_migrate):
     test_runner = NoDBRunner()
     num_failures = test_runner.run_tests(['projecttests'])
 
+    sys.path = orig_path
+
     sys.exit(bool(num_failures))
 
 if __name__ == '__main__':
