@@ -1,10 +1,10 @@
 SECRET_KEY = 'test'
 
 INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
+    # 'django.contrib.auth',
+    # 'django.contrib.contenttypes',
 
-    'simpleapp',
+    # 'simpleapp',
 )
 
 DATABASES = {
@@ -14,7 +14,7 @@ DATABASES = {
         'PORT': '55432',
         'NAME': 'timetravel',
         'USER': 'postgres',
-        'TT_SCHEMA':  'history'
+        # 'TT_SCHEMA':  'history'
     }
 }
 

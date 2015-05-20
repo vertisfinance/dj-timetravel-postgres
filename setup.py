@@ -39,7 +39,7 @@ setup(
     ],
     license="BSD",
     zip_safe=False,
-    keywords='django-timetravel-pg',
+    keywords='dj-timetravel-postgres',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Framework :: Django',
