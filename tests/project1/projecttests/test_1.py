@@ -1,7 +1,7 @@
 # coding: utf-8
 import logging
 
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
@@ -12,21 +12,9 @@ from simpleapp.models import Simple
 LOG = logging.getLogger('djtt.test')
 
 
-class TestWorks(SimpleTestCase):
+class TestNoDB(SimpleTestCase):
     def setUp(self):
         self.db_settings = settings.DATABASES.get('default').copy()
-
-    def test_utf8(self):
-        Simple.objects.create(name='árvíztűrő tükörfúrógép')
-        o = Simple.objects.all()[0]
-        self.assertEqual(u'árvíztűrő tükörfúrógép', o.name)
-        Simple.objects.all().delete()
-
-    def test_trigger(self):
-        o = Simple.objects.create(name='árvíztűrő tükörfúrógép')
-        o.name = 'árvíztűrő ütvefúrógép'
-        o.save()
-        Simple.objects.all().delete()
 
     def test_no_tt_schema(self):
         del self.db_settings['TT_SCHEMA']
@@ -52,3 +40,8 @@ class TestWorks(SimpleTestCase):
         self.db_settings['TT_SCHEMA'] = '""'
         self.assertRaises(ImproperlyConfigured,
                           DatabaseWrapper, self.db_settings)
+
+
+class TestDB(TestCase):
+    def test_insertion(self):
+        Simple.objects.create(name='first')
