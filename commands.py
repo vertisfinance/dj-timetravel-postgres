@@ -178,11 +178,13 @@ def call_projecttests(path,
 @click.option('--browser', '-b', is_flag=True)
 def suite(browser):
     erase_coverage()
-    call_projecttests('tests/wrongconfig1',
-                      exception_class_name='ImproperlyConfigured')
-    call_projecttests('tests/wrongconfig2',
-                      exception_class_name='ImproperlyConfigured')
+
+    # call_projecttests('tests/wrongconfig1',
+    #                   exception_class_name='ImproperlyConfigured')
+    # call_projecttests('tests/wrongconfig2',
+    #                   exception_class_name='ImproperlyConfigured')
     call_projecttests('tests/project1')
+
     coverage_report(browser)
 
 

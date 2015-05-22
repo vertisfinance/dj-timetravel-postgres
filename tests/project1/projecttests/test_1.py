@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 from dj_timetravel_postgres.db_backend.base import DatabaseWrapper
-from simpleapp.models import Simple
+from simpleapp.models import Simple, Complex
 
 
 LOG = logging.getLogger('djtt.test')
@@ -41,7 +41,42 @@ class TestNoDB(SimpleTestCase):
         self.assertRaises(ImproperlyConfigured,
                           DatabaseWrapper, self.db_settings)
 
+    def test_keepdb(self):
+        o1 = Simple(name='first')
+        o1.save()
+        # o2 = Simple.objects.create(name='second')
+        # o3 = Simple.objects.create(name='third')
+        # o4 = Simple.objects.create(name='fourth')
 
-class TestDB(TestCase):
-    def test_insertion(self):
-        Simple.objects.create(name='first')
+        c1 = Complex(simple=o1, title='mr')
+        c1.save()
+
+        for tt in c1.tt_objects.all():
+            LOG.info('tt record: %s' % tt)
+
+
+# class TestDB(TestCase):
+#     def test_insertion(self):
+#         o1 = Simple.objects.create(name='first')
+#         self.assertEqual(len(Simple.tt_objects.all()), 1)
+
+#         o2 = Simple.objects.create(name='second')
+#         self.assertEqual(len(Simple.tt_objects.all()), 2)
+
+#         o1.name = 'new first'
+#         o1.save()
+#         self.assertEqual(len(Simple.tt_objects.all()), 3)
+
+#         # it did not really changed, no need to save
+#         o2.name = 'second'
+#         o2.save()
+#         self.assertEqual(len(Simple.tt_objects.all()), 3)
+
+#         o2.name = 'new second'
+#         o2.save()
+#         self.assertEqual(len(Simple.tt_objects.all()), 4)
+
+#         LOG.debug('o2 tt length: %s' % len(o2.tt_objects.all()))
+
+#         for tt in o2.tt_objects.all():
+#             LOG.debug(tt)

@@ -8,6 +8,8 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.db.models.fields.proxy import OrderWrt
 from django.conf import settings
 
+from .manager import TTDescriptor
+
 
 LOG = logging.getLogger('djtt.models')
 
@@ -22,9 +24,11 @@ class TimeTravel(object):
 
     def finalize(self, sender, **kwargs):
         tt_model = self.create_tt_model(sender)
-
         module = importlib.import_module(self.module)
+
         setattr(module, tt_model.__name__, tt_model)
+
+        sender.tt_objects = TTDescriptor(tt_model)
 
     def create_tt_model(self, model):
         attrs = {'__module__': self.module}
@@ -111,10 +115,10 @@ class TimeTravel(object):
         user_model = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
         def _str(tt_instance):
-            params = (self.as_real_object,
-                      self.tt_valid_from,
-                      self.tt_valid_until)
-            return '%s between %s and %s' % params
+            params = (tt_instance.as_real_object,
+                      tt_instance.tt_valid_from,
+                      tt_instance.tt_valid_until)
+            return 'Timetraveled %s, valid between %s and %s' % params
 
         return {
             'tt_id': models.AutoField(primary_key=True),

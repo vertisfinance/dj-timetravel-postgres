@@ -1,6 +1,7 @@
 import logging
 
 from django.db.backends.postgresql_psycopg2 import schema
+from django.db.migrations.state import ModelState
 
 
 LOG = logging.getLogger('djtt.schema')
@@ -143,7 +144,6 @@ class DatabaseSchemaEditor(schema.DatabaseSchemaEditor):
         cursor.execute(sql)
 
     def recreate_objects(self, model):
-        # if this is a tt_model
         if hasattr(model, 'tt_real_obj'):
             LOG.debug('Recreating objects for %s' % model._meta.model_name)
             self._ensure_schema()
@@ -171,18 +171,35 @@ class DatabaseSchemaEditor(schema.DatabaseSchemaEditor):
             model, old_db_table, new_db_table)
         self.rename_objects(model, old_db_table, new_db_table)
 
+    # The following methods are different:
+    # recreate_objects needs to know the NEW model, but we do not
+    # have access to the new state. State altering must be 'emulated'.
+
     def add_field(self, model, field):
         super(DatabaseSchemaEditor, self).add_field(model, field)
+
+        # ModelState.render needs to have an apps to render into.
+        _apps = model._meta.apps.clone()
+
+        # get a state
+        _model_state = ModelState.from_model(model)
+
+        # add the field
+        _model_state.fields.append((field.name, field))
+
+        # get a model back
+        model = _model_state.render(_apps)
+
         self.recreate_objects(model)
 
     def remove_field(self, model, field):
         super(DatabaseSchemaEditor, self).remove_field(model, field)
-        self.recreate_objects(model)
+        # self.recreate_objects(model)
 
     def alter_field(self, model, old_field, new_field, strict=False):
         super(DatabaseSchemaEditor, self).alter_field(
             model, old_field, new_field, strict)
-        self.recreate_objects(model)
+        # self.recreate_objects(model)
 
     # For reference
 
