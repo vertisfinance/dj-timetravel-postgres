@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:trusty
 
 RUN groupadd -r postgres && useradd -r -g postgres postgres
 
@@ -30,7 +30,7 @@ RUN apt-key adv --keyserver pool.sks-keyservers.net --recv-keys \
 ENV PG_MAJOR 9.4
 ENV PG_VERSION 9.4.1-1.pgdg70+1
 
-RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main' \
+RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main' \
     $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list
 
 RUN apt-get update \
@@ -38,8 +38,8 @@ RUN apt-get update \
     && sed -ri 's/#(create_main_cluster) .*$/\1 = false/' \
        /etc/postgresql-common/createcluster.conf \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        postgresql-$PG_MAJOR=$PG_VERSION \
-        postgresql-contrib-$PG_MAJOR=$PG_VERSION \
+        postgresql-$PG_MAJOR \
+        postgresql-contrib-$PG_MAJOR \
     && rm -rf /var/lib/apt/lists/*
 
 ENV PATH /usr/lib/postgresql/$PG_MAJOR/bin:$PATH
