@@ -1,4 +1,0 @@
-django>=1.8
-coverage==3.7.1
-psycopg2==2.6
-click==4.0

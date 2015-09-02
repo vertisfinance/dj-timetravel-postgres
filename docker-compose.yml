@@ -1,0 +1,66 @@
+data:
+    hostname: data
+    image: dockerenv/core
+    command: start
+    entrypoint:
+        - python3
+        - /src/docker/run_core.py
+    volumes:
+        - ".:/src"
+        - /data
+
+
+postgres:
+    hostname: postgres
+    image: dockerenv/postgres
+    command: start
+    volumes_from:
+        - data
+    volumes:
+        - ".:/src"
+    entrypoint:
+        - python3
+        - /src/docker/run_postgres.py
+    environment:
+        PGDATA: /data/postgres
+        HBA_FILE: /src/docker/postgres/pg_hba.conf
+        CONFIG_FILE: /src/docker/postgres/postgresql_consolelog.conf
+    ports:
+        - "5432:5432"
+
+
+django:
+    hostname: django
+    image: dockerenv/django
+    entrypoint:
+        - python3
+        - /src/docker/run_django.py
+    command: start_uwsgi
+    links:
+        - "postgres:postgres"
+    volumes:
+        - ".:/src"
+    volumes_from:
+        - data
+    env_file: env.txt
+    environment:
+        INI_FILE: /src/docker/django/uwsgi.conf
+        DJANGO_SETTINGS_MODULE: core.settings_dev
+
+
+nginx:
+    hostname: nginx
+    image: dockerenv/nginx
+    entrypoint:
+        - python3
+        - /src/docker/run_nginx.py
+    command: start
+    links:
+        - "django:django"
+    volumes:
+        - ".:/src"
+    volumes_from:
+        - data
+    env_file: env.txt
+    ports:
+        - "80:8080"
